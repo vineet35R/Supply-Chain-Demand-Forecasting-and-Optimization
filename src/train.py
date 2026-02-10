@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 DATA_PATH = 'demand_forecasting_dataset.csv' 
 MODEL_PATH = 'models/lstm_model.h5'
 SEQUENCE_LENGTH = 30
-EPOCHS = 5 # Reduced for demonstration speed
+EPOCHS = 20 # Sufficient for clean data
 BATCH_SIZE = 32
 
 def train():
