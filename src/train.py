@@ -54,30 +54,55 @@ def train():
     # Predict on test data
     y_pred = model.predict(X_test)
     
-    # Calculate metrics
-    mae = mean_absolute_error(y_test, y_pred)
-    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
-    r2 = r2_score(y_test, y_pred)
+    # Inverse transform to get actual values for metrics
+    # We need to create dummy arrays because scaler expects (n_samples, n_features)
+    # The scaler was fitted on: ['sales_units', 'price', ...] (7 features)
+    # We only have the target (scaled_data[:, target_idx]) in y_test/y_pred.
+    
+    # 1. Reconstruct dummy variables with 0s
+    n_features = len(features) 
+    target_idx = features.index('sales_units')
+    
+    # helper to inverse transform
+    def inverse_transform_target(y_scaled, scaler, n_features, target_idx):
+        dummy = np.zeros((len(y_scaled), n_features))
+        dummy[:, target_idx] = y_scaled.flatten()
+        return scaler.inverse_transform(dummy)[:, target_idx]
+
+    y_test_orig = inverse_transform_target(y_test, scaler, n_features, target_idx)
+    y_pred_orig = inverse_transform_target(y_pred, scaler, n_features, target_idx)
+    
+    # Calculate metrics on ORIGINAL scale
+    mae = mean_absolute_error(y_test_orig, y_pred_orig)
+    rmse = np.sqrt(mean_squared_error(y_test_orig, y_pred_orig))
+    r2 = r2_score(y_test_orig, y_pred_orig)
+    
+    # Calculate Accuracy (100 - MAPE)
+    # Add epsilon to avoid division by zero
+    epsilon = 1e-10
+    mape = np.mean(np.abs((y_test_orig - y_pred_orig) / (y_test_orig + epsilon))) * 100
+    accuracy = 100 - mape
     
     print("\n" + "="*30)
-    print("Model Performance Metrics")
+    print("Model Performance Metrics (Original Scale)")
     print("="*30)
-    print(f"MAE:  {mae:.4f}")
-    print(f"RMSE: {rmse:.4f}")
-    print(f"R2:   {r2:.4f}")
+    print(f"MAE:      {mae:.4f}")
+    print(f"RMSE:     {rmse:.4f}")
+    print(f"R2:       {r2:.4f}")
+    print(f"Accuracy: {accuracy:.2f}%")
     print("="*30 + "\n")
     
-    # Save metrics to a text file for easy reading by other tools if needed
+    # Save metrics to a text file
     with open('model_metrics.txt', 'w') as f:
-        f.write(f"MAE: {mae:.4f}\nRMSE: {rmse:.4f}\nR2: {r2:.4f}\n")
+        f.write(f"MAE: {mae:.4f}\nRMSE: {rmse:.4f}\nR2: {r2:.4f}\nAccuracy: {accuracy:.2f}%\n")
 
     # Plot results
     plt.figure(figsize=(12, 6))
-    plt.plot(y_test[:100], label='Actual', color='blue') # Plot first 100 for clarity
-    plt.plot(y_pred[:100], label='Predicted', color='red', linestyle='--')
+    plt.plot(y_test_orig[:100], label='Actual Sales', color='blue') 
+    plt.plot(y_pred_orig[:100], label='Predicted Sales', color='red', linestyle='--')
     plt.title('Demand Forecasting: Actual vs Predicted (First 100 Test Samples)')
     plt.xlabel('Time Step')
-    plt.ylabel('Scaled Demand')
+    plt.ylabel('Sales Units')
     plt.legend()
     plt.savefig('model_performance.png')
     print("Performance plot saved to model_performance.png")

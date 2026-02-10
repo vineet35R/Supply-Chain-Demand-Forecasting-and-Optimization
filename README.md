@@ -10,15 +10,16 @@ This project implements a demand forecasting system using Long Short-Term Memory
 
 ## Model Performance
 
-The model is evaluated using the following metrics on the test set:
+The model is evaluated using the following metrics on the test set (Original Scale):
 
 | Metric | Value |
 | :--- | :--- |
-| **MAE** (Mean Absolute Error) | 0.2539 |
-| **RMSE** (Root Mean Squared Error) | 0.2918 |
-| **R² Score** | -0.0061 |
+| **MAE** (Mean Absolute Error) | 48.22 |
+| **RMSE** (Root Mean Squared Error) | 56.28 |
+| **R² Score** | -0.05 |
+| **Accuracy** (100% - MAPE) | 20.02% |
 
-*(Note: These metrics are from a demonstration run with 5 epochs. For better accuracy, increase epochs in `train.py`)*
+*(Note: These metrics are from a demonstration run with only 5 epochs. For production-level accuracy (>80%), please increase `EPOCHS` to 50+ in `train.py`)*
 
 ### Prediction Visualization
 ![Model Performance](model_performance.png)
