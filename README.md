@@ -4,7 +4,6 @@ This project implements a demand forecasting system using Long Short-Term Memory
 
 ## Features
 
--   **Synthetic Data Generation**: Generates realistic sales data with trends and seasonality.
 -   **LSTM Model**: Deep learning model for time-series forecasting.
 -   **Visualization Dashboard**: Streamlit app to visualize historical data and forecasts.
 
@@ -37,11 +36,7 @@ The model is evaluated using the following metrics on the test set (Original Sca
 
 ## Usage
 
-1.  **Generate Data**:
-    ```bash
-    python src/data_generator.py
-    ```
-2.  **Train Model**:
+1.  **Train Model**:
     ```bash
     python src/train.py
     ```
