@@ -8,6 +8,21 @@ This project implements a demand forecasting system using Long Short-Term Memory
 -   **LSTM Model**: Deep learning model for time-series forecasting.
 -   **Visualization Dashboard**: Streamlit app to visualize historical data and forecasts.
 
+## Model Performance
+
+The model is evaluated using the following metrics on the test set:
+
+| Metric | Value |
+| :--- | :--- |
+| **MAE** (Mean Absolute Error) | 0.2539 |
+| **RMSE** (Root Mean Squared Error) | 0.2918 |
+| **R² Score** | -0.0061 |
+
+*(Note: These metrics are from a demonstration run with 5 epochs. For better accuracy, increase epochs in `train.py`)*
+
+### Prediction Visualization
+![Model Performance](model_performance.png)
+
 ## Setup
 
 1.  Current working directory: `/home/vineet/Desktop/2nd project`

@@ -4,17 +4,19 @@ import tensorflow as tf
 import os
 from preprocessing import load_data, preprocess_data
 from model import create_lstm_model
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+import matplotlib.pyplot as plt
 
 # Constants
 # Use the file provided by the user
 DATA_PATH = 'demand_forecasting_dataset.csv' 
 MODEL_PATH = 'models/lstm_model.h5'
 SEQUENCE_LENGTH = 30
-EPOCHS = 20
+EPOCHS = 5 # Reduced for demonstration speed
 BATCH_SIZE = 32
 
 def train():
-    print("Loading data...")
+    print("Loading data...", flush=True)
     if not os.path.exists(DATA_PATH):
         print(f"Error: {DATA_PATH} not found.")
         return
@@ -48,6 +50,38 @@ def train():
         verbose=1
     )
     
+    print("Evaluating model...")
+    # Predict on test data
+    y_pred = model.predict(X_test)
+    
+    # Calculate metrics
+    mae = mean_absolute_error(y_test, y_pred)
+    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+    r2 = r2_score(y_test, y_pred)
+    
+    print("\n" + "="*30)
+    print("Model Performance Metrics")
+    print("="*30)
+    print(f"MAE:  {mae:.4f}")
+    print(f"RMSE: {rmse:.4f}")
+    print(f"R2:   {r2:.4f}")
+    print("="*30 + "\n")
+    
+    # Save metrics to a text file for easy reading by other tools if needed
+    with open('model_metrics.txt', 'w') as f:
+        f.write(f"MAE: {mae:.4f}\nRMSE: {rmse:.4f}\nR2: {r2:.4f}\n")
+
+    # Plot results
+    plt.figure(figsize=(12, 6))
+    plt.plot(y_test[:100], label='Actual', color='blue') # Plot first 100 for clarity
+    plt.plot(y_pred[:100], label='Predicted', color='red', linestyle='--')
+    plt.title('Demand Forecasting: Actual vs Predicted (First 100 Test Samples)')
+    plt.xlabel('Time Step')
+    plt.ylabel('Scaled Demand')
+    plt.legend()
+    plt.savefig('model_performance.png')
+    print("Performance plot saved to model_performance.png")
+
     print("Saving model...")
     os.makedirs(os.path.dirname(MODEL_PATH), exist_ok=True)
     model.save(MODEL_PATH)
